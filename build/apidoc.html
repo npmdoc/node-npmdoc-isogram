@@ -1,0 +1,178 @@
+<div class="apidocDiv">
+<style>
+/*csslint
+*/
+.apidocDiv {
+    background: #fff;
+    font-family: Arial, Helvetica, sans-serif;
+}
+.apidocDiv a[href] {
+    color: #33f;
+    font-weight: bold;
+    text-decoration: none;
+}
+.apidocDiv a[href]:hover {
+    text-decoration: underline;
+}
+.apidocCodeCommentSpan {
+    background: #bbf;
+    color: #000;
+    display: block;
+}
+.apidocCodeKeywordSpan {
+    color: #d00;
+    font-weight: bold;
+}
+.apidocCodePre {
+    background: #eef;
+    border: 1px solid;
+    color: #777;
+    padding: 5px;
+    white-space: pre-wrap;
+}
+.apidocFooterDiv {
+    margin-top: 20px;
+    text-align: center;
+}
+.apidocModuleLi {
+    margin-top: 10px;
+}
+.apidocSectionDiv {
+    border-top: 1px solid;
+    margin-top: 20px;
+}
+.apidocSignatureSpan {
+    color: #777;
+    font-weight: bold;
+}
+</style>
+<h1>api documentation for
+    <a
+
+    >isogram (v0.6.0)</a>
+</h1>
+<h4>Generate Google Analytics snippet with any 'isogrammic' parameters you like</h4>
+<div class="apidocSectionDiv"><a
+    href="#apidoc.tableOfContents"
+    id="apidoc.tableOfContents"
+><h1>table of contents</h1></a><ol>
+
+    <li class="apidocModuleLi"><a href="#apidoc.module.isogram">module isogram</a><ol>
+
+        <li>
+
+            <a class="apidocElementLiA" href="#apidoc.element.isogram.isogram">
+            function <span class="apidocSignatureSpan"></span>isogram
+            <span class="apidocSignatureSpan">(characters, options)</span>
+            </a>
+
+        </li>
+
+    </ol></li>
+
+</ol></div>
+
+<div class="apidocSectionDiv">
+<h1><a href="#apidoc.module.isogram" id="apidoc.module.isogram">module isogram</a></h1>
+
+
+    <h2>
+        <a href="#apidoc.element.isogram.isogram" id="apidoc.element.isogram.isogram">
+        function <span class="apidocSignatureSpan"></span>isogram
+        <span class="apidocSignatureSpan">(characters, options)</span>
+        </a>
+    </h2>
+    <ul>
+    <li>description and source-code<pre class="apidocCodePre">function isogram(characters, options) {
+  &#x27;use strict&#x27;;
+
+  if (arguments.length === 0) {
+    characters = &#x27;GoOgle&#x27;;
+  } else if (typeof characters !== &#x27;string&#x27;) {
+    if (arguments.length !== 1 || typeof characters !== &#x27;object&#x27;) {
+      throw new TypeError(&#x27;First argument must be a string or an object.&#x27;);
+    }
+
+    options = characters;
+    characters = &#x27;GoOgle&#x27;;
+  }
+
+  if (options) {
+    if (typeof options !== &#x27;object&#x27;) {
+      throw new TypeError(
+        options +
+        &#x27; is not an object. Second argument must be an object.&#x27;
+      );
+    }
+  } else {
+    options = {};
+  }
+
+  var len = characters.length;
+
+  var invalidChars = [];
+  for (var i = 0; i &#x3c; len; i++) {
+    var char = characters.charAt(i);
+    if (!isVarName(char) &#x26;&#x26; i === characters.indexOf(char)) {
+      invalidChars.push(&#x27;&#x22;&#x27; + char + &#x27;&#x22;&#x27;);
+    }
+  }
+  if (invalidChars.length &#x3e; 0) {
+    var isPlural = invalidChars.length !== 1;
+    throw new Error(
+      arrayToSentence(invalidChars) + &#x27; cannot be used as &#x27; +
+      (isPlural ? &#x27;&#x27; : &#x27;a &#x27;) + &#x27;JavaScript parameter name&#x27; + (isPlural ? &#x27;s&#x27; : &#x27;&#x27;) + &#x27;.&#x27;
+    );
+  }
+
+  if (len &#x3c; 3 || 7 &#x3c; len) {
+    throw new RangeError(&#x27;Number of characters must be no fewer than 3 and no greater than 7.&#x27;);
+  }
+
+  assertUnique.apply(null, characters.split(&#x27;&#x27;));
+
+  var gaTracker = gaTrackerSnippet(options);
+
+  var gaLoader = gaLoaderSnippets[&#x27;with&#x27; + len + &#x27;params&#x27;]
+  .replace(
+    new RegExp(&#x27;([A-&#x27; + String.fromCharCode(65 + len - 1) + &#x27;])(?=[^a-z])&#x27;, &#x27;g&#x27;),
+    function(str) {
+      var char = characters.charAt(str.charCodeAt(0) - 65);
+      if (options.color) {
+        // Colorize with ANSI green color
+        char = &#x27;\u001b[32m&#x27; + char + &#x27;\u001b[39m&#x27;;
+      }
+      return char;
+    }
+  );
+
+  if (options.globalName) {
+    gaLoader = gaLoader.replace(/&#x22;ga&#x22;/g, &#x27;&#x22;&#x27; + options.globalName + &#x27;&#x22;&#x27;);
+  }
+
+  if (options.singleQuotes === undefined || options.singleQuotes) {
+    gaLoader = gaLoader.replace(/&#x22;/g, &#x27;\&#x27;&#x27;);
+  }
+
+  if (options.minify) {
+    return gaLoader.replace(/\n/g, &#x27;&#x27;) + gaTracker;
+  }
+
+  if (options.track === undefined || options.track) {
+    return gaLoader + &#x27;\n\n&#x27; + gaTracker;
+  }
+
+  return gaLoader;
+}</pre></li>
+    <li>example usage<pre class="apidocCodePre">n/a</pre></li>
+    </ul>
+
+
+</div>
+
+<div class="apidocFooterDiv">
+    [ this document was created with
+    <a href="https://github.com/kaizhu256/node-utility2" target="_blank">utility2</a>
+    ]
+</div>
+</div>
